@@ -2,9 +2,9 @@
 	import { RegionTooltipStore } from '$lib/stores/RegionTooltip';
 	import { computePosition, offset, flip, shift } from '@floating-ui/dom';
 
-	let tooltip: HTMLDivElement | undefined = undefined;
-	let top = 0;
-	let left = 0;
+	let tooltip: HTMLDivElement | undefined = $state(undefined);
+	let top = $state(0);
+	let left = $state(0);
 
 	RegionTooltipStore.subscribe(() => {
 		const virtualEl = {

@@ -26,10 +26,14 @@
 </script>
 
 <ModalBase title="Clear Map" store={ClearMapModalStore}>
-	<div slot="content">
-		<p>Clearing the map will result in all of your progress being cleared. Are you sure?</p>
-	</div>
-	<div slot="action">
-		<button class="btn btn-error" on:click={confirm}>confirm</button>
-	</div>
+	{#snippet content()}
+		<div >
+			<p>Clearing the map will result in all of your progress being cleared. Are you sure?</p>
+		</div>
+	{/snippet}
+	{#snippet action()}
+		<div >
+			<button class="btn btn-error" onclick={confirm}>confirm</button>
+		</div>
+	{/snippet}
 </ModalBase>

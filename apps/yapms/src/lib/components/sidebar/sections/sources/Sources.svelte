@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { SideBarStore } from '$lib/stores/SideBar';
 
-	$: sources = $SideBarStore.sources.map((source) => {
+	let sources = $derived($SideBarStore.sources.map((source) => {
 		return new URL(source);
-	});
+	}));
 </script>
 
 <div class="divider">Sources</div>

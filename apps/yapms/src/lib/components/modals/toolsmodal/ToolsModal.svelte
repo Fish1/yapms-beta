@@ -6,11 +6,13 @@
 </script>
 
 <ModalBase title="Tools" store={ToolsModalStore}>
-	<div slot="content">
-		<div class="flex flex-col gap-y-2 mx-5">
-			<ToolButton text={'Edit All Regions'} store={MassEditModalStore} />
+	{#snippet content()}
+		<div >
+			<div class="flex flex-col gap-y-2 mx-5">
+				<ToolButton text={'Edit All Regions'} store={MassEditModalStore} />
+			</div>
 		</div>
-	</div>
+	{/snippet}
 </ModalBase>
 
 <MassEditModal />

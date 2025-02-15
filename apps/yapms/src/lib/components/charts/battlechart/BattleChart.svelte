@@ -6,54 +6,58 @@
 	import { CandidateCounts, CandidateCountsMargins } from '$lib/stores/regions/Regions';
 	import BattleChartLabel from './BattleChartLabel.svelte';
 
-	export let transitions: boolean = true;
+	interface Props {
+		transitions?: boolean;
+	}
 
-	$: tossupCounts = {
+	let { transitions = true }: Props = $props();
+
+	let tossupCounts = $derived({
 		count: $CandidateCounts.get($TossupCandidateStore.id) ?? 0,
 		color: $TossupCandidateStore.margins.at(0)?.color ?? '#000000'
-	};
+	});
 
-	$: countsWithLeans = $CandidatesStore.map((candidate) => {
+	let countsWithLeans = $derived($CandidatesStore.map((candidate) => {
 		return candidate.margins.map((margin, index) => ({
 			count: $CandidateCountsMargins.get(candidate.id)?.at(index) ?? 0,
 			color: margin.color
 		}));
-	});
+	}));
 
-	$: countsWithNoLeans = $CandidatesStore.map((candidate) => {
+	let countsWithNoLeans = $derived($CandidatesStore.map((candidate) => {
 		return [
 			{
 				count: $CandidateCounts.get(candidate.id) ?? 0,
 				color: candidate.margins[0].color
 			}
 		];
-	});
+	}));
 
-	$: choosenChartData = $ChartLeansStore.enabled ? countsWithLeans : countsWithNoLeans;
+	let choosenChartData = $derived($ChartLeansStore.enabled ? countsWithLeans : countsWithNoLeans);
 
-	$: finalChartData =
-		choosenChartData.length === 2
+	let finalChartData =
+		$derived(choosenChartData.length === 2
 			? [
 					...(choosenChartData.at(0) ?? []),
 					tossupCounts,
 					...(choosenChartData.at(1) ?? []).reverse()
 				]
-			: [tossupCounts, ...choosenChartData.flat()];
+			: [tossupCounts, ...choosenChartData.flat()]);
 
 	/**
 	 * Sum the total number of votes
 	 */
-	$: total = finalChartData.reduce((total, count) => total + count.count, 0);
+	let total = $derived(finalChartData.reduce((total, count) => total + count.count, 0));
 
 	/**
 	 * Calculate the percentage of votes for each candidate
 	 */
-	$: percentages = finalChartData.map((count) => count.count / total);
+	let percentages = $derived(finalChartData.map((count) => count.count / total));
 
 	/**
 	 * Calculate the color of the candidate with over half the votes
 	 */
-	$: winningColor = $CandidatesStore.reduce(
+	let winningColor = $derived($CandidatesStore.reduce(
 		(current, candidate) => {
 			const nextWinner = $CandidateCounts.get(candidate.id) ?? 0;
 			if (nextWinner > total / 2) {
@@ -63,7 +67,7 @@
 			}
 		},
 		$TossupCandidateStore.margins.at(0)?.color ?? '#000000'
-	);
+	));
 </script>
 
 <div

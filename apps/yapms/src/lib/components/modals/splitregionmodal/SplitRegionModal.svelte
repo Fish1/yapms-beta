@@ -11,12 +11,12 @@
 		margin: number;
 	}
 
-	$: candidatesInRegion =
-		$SplitRegionModalStore.region?.candidates.map<SplitRegionCandidate>((candidate) => {
+	let candidatesInRegion =
+		$derived($SplitRegionModalStore.region?.candidates.map<SplitRegionCandidate>((candidate) => {
 			return candidate;
-		}) ?? [];
+		}) ?? []);
 
-	$: candidatesInStore = [...$CandidatesStore, $TossupCandidateStore]
+	let candidatesInStore = $derived([...$CandidatesStore, $TossupCandidateStore]
 		.map<SplitRegionCandidate>((candidate) => {
 			return {
 				candidate,
@@ -28,7 +28,7 @@
 			return !candidatesInRegion.some(
 				(regionCandidate) => regionCandidate.candidate.id === candidate.candidate.id
 			);
-		});
+		}));
 
 	function keepTossupAtTop(left: SplitRegionCandidate, right: SplitRegionCandidate) {
 		if (left.candidate.id === $TossupCandidateStore.id) {
@@ -39,15 +39,15 @@
 		return left.candidate.name.localeCompare(right.candidate.name);
 	}
 
-	$: candidates = candidatesInRegion.concat(candidatesInStore).sort(keepTossupAtTop);
+	let candidates = $derived(candidatesInRegion.concat(candidatesInStore).sort(keepTossupAtTop));
 
-	$: tossupCandidate = candidates.find(
+	let tossupCandidate = $derived(candidates.find(
 		(candidate) => candidate.candidate.id === $TossupCandidateStore.id
 	) ?? {
 		candidate: $TossupCandidateStore,
 		count: 0,
 		margin: 0
-	};
+	});
 
 	function convertToRegionCandidate(splitRegionCandidate: SplitRegionCandidate) {
 		const candidate = $CandidatesStore.find(
@@ -199,50 +199,52 @@
 </script>
 
 <ModalBase title="Split {$SplitRegionModalStore.region?.longName}" store={SplitRegionModalStore}>
-	<div slot="content" class="flex flex-col gap-4">
-		{#each candidates as candidate}
-			<label class="flex flex-col w-full gap-2">
-				<div class="flex justify-between">
-					<div class="flex items-center gap-x-1">
-						<span class="font-medium">{candidate.candidate.name}</span>
-						<button
-							style="background-color:{candidate.candidate.margins.at(candidate.margin)?.color};"
-							class="w-5 h-5 rounded-md"
-							class:hidden={isTossupCandidate(candidate.candidate.id)}
-							on:click={(event) => updateCandidateMargin(event, candidate)}
-						/>
+	{#snippet content()}
+		<div  class="flex flex-col gap-4">
+			{#each candidates as candidate}
+				<label class="flex flex-col w-full gap-2">
+					<div class="flex justify-between">
+						<div class="flex items-center gap-x-1">
+							<span class="font-medium">{candidate.candidate.name}</span>
+							<button
+								style="background-color:{candidate.candidate.margins.at(candidate.margin)?.color};"
+								class="w-5 h-5 rounded-md"
+								class:hidden={isTossupCandidate(candidate.candidate.id)}
+								onclick={(event) => updateCandidateMargin(event, candidate)}
+							></button>
+						</div>
+						<div class="flex space-x-0 font-thin font-mono">
+							<span class="px-0">(</span>
+							{#if isTossupCandidate(candidate.candidate.id)}
+								<span>{candidate.count}</span>
+							{:else}
+								<input
+									onchange={(event) => updateCandidateCount(event, candidate)}
+									onkeypress={preventNonNumericalInput}
+									onpaste={preventNonNumericalPaste}
+									value={candidate.count}
+									class="rounded-md px-1 text-end resizing-input-split"
+								/>
+							{/if}
+							<span
+								>/{$SplitRegionModalStore.region?.value})
+								{((candidate.count / ($SplitRegionModalStore.region?.value ?? 1)) * 100).toFixed(
+									2
+								)}%</span
+							>
+						</div>
 					</div>
-					<div class="flex space-x-0 font-thin font-mono">
-						<span class="px-0">(</span>
-						{#if isTossupCandidate(candidate.candidate.id)}
-							<span>{candidate.count}</span>
-						{:else}
-							<input
-								on:change={(event) => updateCandidateCount(event, candidate)}
-								on:keypress={preventNonNumericalInput}
-								on:paste={preventNonNumericalPaste}
-								value={candidate.count}
-								class="rounded-md px-1 text-end resizing-input-split"
-							/>
-						{/if}
-						<span
-							>/{$SplitRegionModalStore.region?.value})
-							{((candidate.count / ($SplitRegionModalStore.region?.value ?? 1)) * 100).toFixed(
-								2
-							)}%</span
-						>
-					</div>
-				</div>
-				<input
-					type="range"
-					class="range"
-					min="0"
-					max={$SplitRegionModalStore.region?.value}
-					value={candidate.count}
-					on:input={(event) => updateCandidateCount(event, candidate)}
-					disabled={isTossupCandidate(candidate.candidate.id)}
-				/>
-			</label>
-		{/each}
-	</div>
+					<input
+						type="range"
+						class="range"
+						min="0"
+						max={$SplitRegionModalStore.region?.value}
+						value={candidate.count}
+						oninput={(event) => updateCandidateCount(event, candidate)}
+						disabled={isTossupCandidate(candidate.candidate.id)}
+					/>
+				</label>
+			{/each}
+		</div>
+	{/snippet}
 </ModalBase>

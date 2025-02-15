@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 	import '$lib/styles/global.css';
 	import { loadFromJson } from '$lib/utils/loadMap';
@@ -10,12 +12,19 @@
 	import { browser } from '$app/environment';
 	import { setRegionStrokeColor } from '$lib/stores/RegionStrokeColorStore';
 
-	$: filename = undefined as string | undefined;
-	$: countryPath = undefined as string | undefined;
-	$: map =
+	let filename;
+	run(() => {
+		filename = undefined as string | undefined;
+	});
+	let countryPath;
+	run(() => {
+		countryPath = undefined as string | undefined;
+	});
+	let map = $derived(
 		filename !== undefined && countryPath !== undefined
 			? import(`../../lib/assets/maps/${countryPath}/${filename}.svg?raw`)
-			: undefined;
+			: undefined
+	);
 
 	if (browser) {
 		loadMapFromURL($page.url, false).then(() => {
@@ -50,11 +59,11 @@
 	{#await map then map}
 		<div class="flex flex-col h-full p-3">
 			<CandidateBoxContainer selectable={false} transitions={false} />
-			<div class="grow" />
+			<div class="grow"></div>
 			<div use:setupMap id="map-div" class="overflow-hidden">
 				{@html map.default}
 			</div>
-			<div class="grow" />
+			<div class="grow"></div>
 			<div>
 				<HorizontalBattleChart transitions={false} />
 			</div>

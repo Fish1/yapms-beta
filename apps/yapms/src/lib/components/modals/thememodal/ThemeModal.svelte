@@ -5,7 +5,9 @@
 </script>
 
 <ModalBase title="Change Theme" store={ThemeModalStore}>
-	<div slot="content">
-		<ThemeGrid />
-	</div>
+	{#snippet content()}
+		<div >
+			<ThemeGrid />
+		</div>
+	{/snippet}
 </ModalBase>

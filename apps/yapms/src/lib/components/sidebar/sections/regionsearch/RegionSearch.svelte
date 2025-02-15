@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { RegionsStore } from '$lib/stores/regions/Regions';
 
-	$: search = '';
+	let search = $state('');
+	
 
-	$: {
+	run(() => {
 		const lowerSearch = search.toLowerCase().trim();
 
 		const regions = $RegionsStore.map((region) => {
@@ -20,7 +23,7 @@
 		});
 
 		$RegionsStore = regions;
-	}
+	});
 </script>
 
 <div class="divider">Search</div>

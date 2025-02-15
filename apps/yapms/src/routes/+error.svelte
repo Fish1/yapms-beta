@@ -13,7 +13,7 @@
 	<div class="flex flex-col w-full lg:w-auto lg:flex-row-reverse justify-center lg:gap-x-6 gap-y-6">
 		<a href="/" class="btn btn-primary btn-lg btn-block max-w-xl">Home</a>
 		<button
-			on:click={() => {
+			onclick={() => {
 				history.back();
 			}}
 			class="btn btn-lg btn-block max-w-xl">Previous Page</button

@@ -3,7 +3,11 @@
 	import MagnifyingGlass from '$lib/icons/MagnifyingGlass.svelte';
 	import { goto } from '$app/navigation';
 
-	export let data: { title: string; route: string }[] = [];
+	interface Props {
+		data?: { title: string; route: string }[];
+	}
+
+	let { data = [] }: Props = $props();
 </script>
 
 <div class="pt-6">
@@ -17,9 +21,11 @@
 			on:select={async (selected) => {
 				await goto(selected.detail.original.route);
 			}}
-			let:result
+			
 		>
-			{result.original.title}
-		</Typeahead>
+			{#snippet children({ result })}
+						{result.original.title}
+								{/snippet}
+				</Typeahead>
 	</div>
 </div>

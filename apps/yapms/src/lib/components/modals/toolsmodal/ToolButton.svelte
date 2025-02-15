@@ -2,8 +2,12 @@
 	import { ToolsModalStore } from '$lib/stores/Modals';
 	import type { Writable } from 'svelte/store';
 
-	export let text: string;
-	export let store: Writable<{ open: boolean }>;
+	interface Props {
+		text: string;
+		store: Writable<{ open: boolean }>;
+	}
+
+	let { text, store }: Props = $props();
 
 	function openToolModal() {
 		$store.open = true;
@@ -11,6 +15,6 @@
 	}
 </script>
 
-<button class="btn btn-primary" on:click={openToolModal}>
+<button class="btn btn-primary" onclick={openToolModal}>
 	{text}
 </button>

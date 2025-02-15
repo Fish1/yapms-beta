@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { loadFromJson } from '$lib/utils/loadMap';
 	import { page } from '$app/stores';
 	import { MapInsetsStore } from '$lib/stores/MapInsetsStore';
@@ -12,13 +14,20 @@
 	import { loadActionGroups } from '$lib/stores/ActionGroups';
 	import { RegionTextsStore } from '$lib/stores/RegionTextsStore';
 	import { setRegionStrokeColor } from '$lib/stores/RegionStrokeColorStore';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
 
-	$: requestedMap = $page.url.pathname.replace('/app/', '').replaceAll('/', '-');
-	$: country = requestedMap.split('-').at(0);
-	$: map = import(`../../../lib/assets/maps/${country}/${requestedMap}.svg?raw`);
+	let { children }: Props = $props();
 
-	$: map.catch(() => {
-		if (browser) goto('/');
+	let requestedMap = $derived($page.url.pathname.replace('/app/', '').replaceAll('/', '-'));
+	let country = $derived(requestedMap.split('-').at(0));
+	let map = $derived(import(`../../../lib/assets/maps/${country}/${requestedMap}.svg?raw`));
+
+	run(() => {
+		map.catch(() => {
+			if (browser) goto('/');
+		});
 	});
 
 	function setupMap(node: HTMLDivElement) {
@@ -36,7 +45,9 @@
 		loadMapFromURL($page.url);
 	}
 
-	$: if ($LoadedMapStore) loadFromJson($LoadedMapStore);
+	run(() => {
+		if ($LoadedMapStore) loadFromJson($LoadedMapStore);
+	});
 </script>
 
 {#await map}
@@ -54,4 +65,4 @@
 		{@html map.default}
 	</div>
 {/await}
-<slot />
+{@render children?.()}

@@ -45,7 +45,11 @@
 	import EspMapCard from '$lib/components/mapcard/mapcards/ESPMapCard.svelte';
 	import PolMapCard from '$lib/components/mapcard/mapcards/POLMapCard.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	function openThemeModal() {
 		ThemeModalStore.set({
@@ -77,10 +81,10 @@
 <div class="flex flex-col h-full overflow-hidden">
 	<div class="navbar bg-base-200">
 		<div class="navbar-start">
-			<button class="btn px-8 btn-primary mr-2 hidden md:inline" on:click={openImportModal}
+			<button class="btn px-8 btn-primary mr-2 hidden md:inline" onclick={openImportModal}
 				>Import</button
 			>
-			<button class="btn btn-square mr-2 inline md:hidden" on:click={openImportModal}
+			<button class="btn btn-square mr-2 inline md:hidden" onclick={openImportModal}
 				><ArrowUpTray class="h-8 m-auto" /></button
 			>
 		</div>
@@ -91,16 +95,16 @@
 			<h1 class="text-2xl font-bold m-auto inline lg:hidden">YAPms</h1>
 		</div>
 		<div class="navbar-end">
-			<button class="btn px-8 btn-primary mr-2 hidden md:inline" on:click={openThemeModal}
+			<button class="btn px-8 btn-primary mr-2 hidden md:inline" onclick={openThemeModal}
 				>Theme</button
 			>
-			<button class="btn btn-square mr-2 inline md:hidden" on:click={openThemeModal}
+			<button class="btn btn-square mr-2 inline md:hidden" onclick={openThemeModal}
 				><Swatch class="h-8 m-auto" /></button
 			>
-			<button class="btn px-8 btn-primary mr-2 hidden md:inline" on:click={openAuthModal}
+			<button class="btn px-8 btn-primary mr-2 hidden md:inline" onclick={openAuthModal}
 				>{$PocketBaseStore.authStore.isValid ? 'Account' : 'Login'}</button
 			>
-			<button class="btn btn-square mr-2 inline md:hidden" on:click={openAuthModal}
+			<button class="btn btn-square mr-2 inline md:hidden" onclick={openAuthModal}
 				><Login class="h-8 m-auto" /></button
 			>
 		</div>
@@ -108,7 +112,7 @@
 
 	<div class="flex flex-row h-full overflow-hidden">
 		<UpdatesSidebar />
-		<div class="divider md:divider-horizontal ml-0 w-0 !mr-0" />
+		<div class="divider md:divider-horizontal ml-0 w-0 !mr-0"></div>
 		<div class="flex-1 md:px-5 overflow-auto overflow-x-clip pb-4">
 			<MapSearch data={data.post.search} />
 

@@ -10,11 +10,15 @@
 </script>
 
 <ModalBase title="Navigate Home" store={NavigateHomeModalStore}>
-	<div slot="content">
-		<p>Navigating home will result in all of your progress being cleared. Are you sure?</p>
-	</div>
+	{#snippet content()}
+		<div >
+			<p>Navigating home will result in all of your progress being cleared. Are you sure?</p>
+		</div>
+	{/snippet}
 
-	<div slot="action">
-		<button class="btn btn-error" on:click={confirm}>Confirm</button>
-	</div>
+	{#snippet action()}
+		<div >
+			<button class="btn btn-error" onclick={confirm}>Confirm</button>
+		</div>
+	{/snippet}
 </ModalBase>

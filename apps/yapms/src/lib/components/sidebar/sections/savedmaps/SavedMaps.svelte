@@ -1,9 +1,14 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { PocketBaseStore } from '$lib/stores/PocketBase';
 	import SavedMap from './SavedMap.svelte';
 	import SaveMap from './SaveMap.svelte';
 
-	$: maps = $PocketBaseStore.collection('user_maps').getFullList();
+	let maps;
+	run(() => {
+		maps = $PocketBaseStore.collection('user_maps').getFullList();
+	});
 
 	function refreshMaps() {
 		maps = $PocketBaseStore.collection('user_maps').getFullList();
@@ -15,7 +20,7 @@
 	<SaveMap onSubmitted={refreshMaps} />
 	{#await maps}
 		<div class="flex justify-center">
-			<span class="loading loading-dots loading-lg" />
+			<span class="loading loading-dots loading-lg"></span>
 		</div>
 	{:then maps}
 		{#each maps.sort((a, b) => a.name.localeCompare(b.name)) as map}

@@ -16,20 +16,24 @@
 </script>
 
 <ModalBase store={EditTossupModalStore} onClose={close}>
-	<label slot="title" class="flex flex-row gap-x-2 items-center">
-		<span>Edit</span>
-		<input
-			type="text"
-			class="input input-sm input-bordered w-full max-w-xs"
-			bind:value={$TossupCandidateStore.name}
-		/>
-	</label>
-	<div slot="content" class="flex justify-center">
-		<input
-			type="color"
-			class="cursor-pointer"
-			on:change={updateColor}
-			value={$TossupCandidateStore.margins[0].color}
-		/>
-	</div>
+	{#snippet title()}
+		<label  class="flex flex-row gap-x-2 items-center">
+			<span>Edit</span>
+			<input
+				type="text"
+				class="input input-sm input-bordered w-full max-w-xs"
+				bind:value={$TossupCandidateStore.name}
+			/>
+		</label>
+	{/snippet}
+	{#snippet content()}
+		<div  class="flex justify-center">
+			<input
+				type="color"
+				class="cursor-pointer"
+				onchange={updateColor}
+				value={$TossupCandidateStore.margins[0].color}
+			/>
+		</div>
+	{/snippet}
 </ModalBase>

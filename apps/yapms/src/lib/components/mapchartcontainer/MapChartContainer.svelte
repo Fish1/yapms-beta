@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <script lang="ts">
 	import { afterUpdate } from 'svelte';
 	import CandidateBoxContainer from '../candidatebox/CandidateBoxContainer.svelte';
@@ -6,7 +7,7 @@
 	import { reapplyPanZoom } from '$lib/utils/applyPanZoom';
 	import { PresentationModeStore } from '$lib/stores/PresentationMode';
 
-	afterUpdate(reapplyPanZoom);
+	// afterUpdate(reapplyPanZoom);
 </script>
 
 <div

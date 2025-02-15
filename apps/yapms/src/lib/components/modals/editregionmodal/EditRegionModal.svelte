@@ -1,16 +1,13 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { EditRegionModalStore } from '$lib/stores/Modals';
 	import { RegionsStore } from '$lib/stores/regions/Regions';
 	import ModalBase from '../ModalBase.svelte';
 
-	$: open = $EditRegionModalStore.open;
-	$: longName = open ? $EditRegionModalStore.region?.longName : undefined;
-	$: value = open ? $EditRegionModalStore.region?.permaVal : undefined;
-	$: newValue = value ?? 0;
 
-	$: if (open) focusInput();
 
-	let valueInput: HTMLInputElement;
+	let valueInput: HTMLInputElement = $state();
 
 	function focusInput() {
 		if (valueInput) {
@@ -41,26 +38,40 @@
 		$RegionsStore[index].permaVal = newValue;
 		$EditRegionModalStore.open = false;
 	}
+	let open = $derived($EditRegionModalStore.open);
+	let longName = $derived(open ? $EditRegionModalStore.region?.longName : undefined);
+	let value = $derived(open ? $EditRegionModalStore.region?.permaVal : undefined);
+	let newValue;
+	run(() => {
+		newValue = value ?? 0;
+	});
+	run(() => {
+		if (open) focusInput();
+	});
 </script>
 
 <ModalBase title="Edit Region {longName} - {value}" store={EditRegionModalStore}>
-	<div slot="content">
-		<div class="form-control w-full flex flex-col gap-3">
-			<h3 class="font-light text-lg">Region Value</h3>
-			<form on:submit={confirm}>
-				<input
-					type="number"
-					class="input input-bordered w-full"
-					min="0"
-					on:keypress={preventNonNumericalInput}
-					on:paste={preventNonNumericalPaste}
-					bind:value={newValue}
-					bind:this={valueInput}
-				/>
-			</form>
+	{#snippet content()}
+		<div >
+			<div class="form-control w-full flex flex-col gap-3">
+				<h3 class="font-light text-lg">Region Value</h3>
+				<form onsubmit={confirm}>
+					<input
+						type="number"
+						class="input input-bordered w-full"
+						min="0"
+						onkeypress={preventNonNumericalInput}
+						onpaste={preventNonNumericalPaste}
+						bind:value={newValue}
+						bind:this={valueInput}
+					/>
+				</form>
+			</div>
 		</div>
-	</div>
-	<div slot="action">
-		<button class="btn btn-success" on:click={confirm}>Confirm</button>
-	</div>
+	{/snippet}
+	{#snippet action()}
+		<div >
+			<button class="btn btn-success" onclick={confirm}>Confirm</button>
+		</div>
+	{/snippet}
 </ModalBase>

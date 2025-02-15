@@ -2,6 +2,11 @@
 	import '$lib/styles/global.css';
 	import '@fontsource/roboto/400.css';
 	import { PUBLIC_UMAMI_URI, PUBLIC_UMAMI_DATA_WEBSITE_ID } from '$env/static/public';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <svelte:head>
@@ -14,4 +19,4 @@
 	></script>
 </svelte:head>
 
-<slot />
+{@render children?.()}

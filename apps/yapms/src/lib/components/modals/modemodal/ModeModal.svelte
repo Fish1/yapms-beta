@@ -12,23 +12,25 @@
 </script>
 
 <ModalBase title="Change Mode" store={ModeModalStore}>
-	<div slot="content">
-		<div class="grid grid-cols-2 grid-flow-row gap-4">
-			{#each modes as mode}
-				<button
-					class="btn"
-					class:btn-primary={$ModeStore !== mode}
-					class:btn-success={$ModeStore === mode}
-					value={mode}
-					on:click={() => {
+	{#snippet content()}
+		<div >
+			<div class="grid grid-cols-2 grid-flow-row gap-4">
+				{#each modes as mode}
+					<button
+						class="btn"
+						class:btn-primary={$ModeStore !== mode}
+						class:btn-success={$ModeStore === mode}
+						value={mode}
+						onclick={() => {
 						setMode(mode);
 					}}
-				>
-					<span>
-						{mode.toUpperCase()}
-					</span>
-				</button>
-			{/each}
+					>
+						<span>
+							{mode.toUpperCase()}
+						</span>
+					</button>
+				{/each}
+			</div>
 		</div>
-	</div>
+	{/snippet}
 </ModalBase>

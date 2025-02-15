@@ -11,20 +11,24 @@
 	title={$PocketBaseStore.authStore.isValid ? 'Your Account' : 'Login'}
 	store={AuthModalStore}
 >
-	<div slot="content">
-		<div class="flex flex-col justify-around gap-2">
-			{#if $PocketBaseStore.authStore.isValid}
-				<AccountForm />
-			{:else}
-				<LoginForm />
-			{/if}
+	{#snippet content()}
+		<div >
+			<div class="flex flex-col justify-around gap-2">
+				{#if $PocketBaseStore.authStore.isValid}
+					<AccountForm />
+				{:else}
+					<LoginForm />
+				{/if}
+			</div>
 		</div>
-	</div>
+	{/snippet}
 
-	<div slot="action">
-		<span>
-			By using our services, you agree to our
-			<a href={PUBLIC_PRIVACY_POLICY_URI} class="link link-info">privacy policy</a>
-		</span>
-	</div>
+	{#snippet action()}
+		<div >
+			<span>
+				By using our services, you agree to our
+				<a href={PUBLIC_PRIVACY_POLICY_URI} class="link link-info">privacy policy</a>
+			</span>
+		</div>
+	{/snippet}
 </ModalBase>

@@ -3,11 +3,15 @@
 	import { loadUserMapFromID } from '$lib/stores/LoadedMap';
 	import { PocketBaseStore } from '$lib/stores/PocketBase';
 
-	export let mapName: string;
-	export let mapID: string;
-	export let onDeleted: () => void;
+	interface Props {
+		mapName: string;
+		mapID: string;
+		onDeleted: () => void;
+	}
 
-	let submitting = false;
+	let { mapName, mapID, onDeleted }: Props = $props();
+
+	let submitting = $state(false);
 
 	async function deleteMap() {
 		submitting = true;
@@ -24,7 +28,7 @@
 <div class="join">
 	<button
 		class="btn btn-sm flex-shrink flex-grow join-item overflow-hidden"
-		on:click={openMap}
+		onclick={openMap}
 		disabled={submitting}
 	>
 		{mapName}
@@ -32,7 +36,7 @@
 	<div class="tooltip" data-tip="Delete">
 		<button
 			class="btn btn-sm btn-error flex-shrink join-item"
-			on:click={deleteMap}
+			onclick={deleteMap}
 			disabled={submitting}
 		>
 			<MinusCircle class="w-6 h-6" />

@@ -2,7 +2,8 @@
 	import { MassEditModalStore } from '$lib/stores/Modals';
 	import { RegionsStore } from '$lib/stores/regions/Regions';
 	import ModalBase from '../../ModalBase.svelte';
-	$: value = 1;
+	let value = $state(1);
+	
 	function preventNonNumericalInput(e: KeyboardEvent) {
 		if (e.key !== 'Enter' && !e.key.match(/^[0-9]+$/)) e.preventDefault();
 	}
@@ -26,22 +27,26 @@
 </script>
 
 <ModalBase title="Edit All Regions" store={MassEditModalStore}>
-	<div slot="content">
-		<div class="form-control w-full flex flex-col gap-3">
-			<h3 class="font-light text-lg">Region Value</h3>
-			<form on:submit={confirm}>
-				<input
-					type="number"
-					class="input input-bordered w-full"
-					min="0"
-					on:keypress={preventNonNumericalInput}
-					on:paste={preventNonNumericalPaste}
-					bind:value
-				/>
-			</form>
+	{#snippet content()}
+		<div >
+			<div class="form-control w-full flex flex-col gap-3">
+				<h3 class="font-light text-lg">Region Value</h3>
+				<form onsubmit={confirm}>
+					<input
+						type="number"
+						class="input input-bordered w-full"
+						min="0"
+						onkeypress={preventNonNumericalInput}
+						onpaste={preventNonNumericalPaste}
+						bind:value
+					/>
+				</form>
+			</div>
 		</div>
-	</div>
-	<div slot="action">
-		<button class="btn btn-success" on:click={confirm}>Confirm</button>
-	</div>
+	{/snippet}
+	{#snippet action()}
+		<div >
+			<button class="btn btn-success" onclick={confirm}>Confirm</button>
+		</div>
+	{/snippet}
 </ModalBase>

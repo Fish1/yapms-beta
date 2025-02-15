@@ -18,15 +18,15 @@
 	import fileSaver from 'file-saver';
 	import Camera from '$lib/icons/Camera.svelte';
 
-	let files: FileList;
+	let files: FileList = $state();
 
-	let fetchingLink = false;
-	let copiedLink = false;
-	let errorOnGenerateLink = false;
-	let linkID: string | null = null;
+	let fetchingLink = $state(false);
+	let copiedLink = $state(false);
+	let errorOnGenerateLink = $state(false);
+	let linkID: string | null = $state(null);
 
-	let turnstileToken: string | null = null;
-	let turnstileResetBind: () => void | undefined;
+	let turnstileToken: string | null = $state(null);
+	let turnstileResetBind: () => void | undefined = $state();
 
 	function resetTurnstile() {
 		turnstileToken = null;
@@ -122,80 +122,84 @@
 </script>
 
 <ModalBase title="Share Map" store={ShareModalStore} onClose={close}>
-	<div slot="content">
-		<div class="flex flex-row gap-4">
-			<div class="flex flex-col gap-2">
-				<h3 class="font-light text-lg pb-3">Save</h3>
-				<button class="btn btn-secondary gap-1 flex-nowrap" on:click={screenshot}>
-					<Camera class="w-5 h-5" />
-					<span>Screenshot</span>
-				</button>
-				<button class="btn btn-secondary gap-1 flex-nowrap" on:click={downloadJson}>
-					<ArrowDownTray class="w-5 h-5" />
-					<span>Download</span>
-				</button>
-				<div
-					class="tooltip-right"
-					class:tooltip={$page.url.pathname === '/app/imported'}
-					data-tip="Can not link to an imported map"
-				>
-					<button
-						class="btn btn-secondary gap-1 flex-nowrap"
-						on:click={generateLink}
-						disabled={fetchingLink ||
-							turnstileToken === null ||
-							$page.url.pathname === '/app/imported'}
+	{#snippet content()}
+		<div >
+			<div class="flex flex-row gap-4">
+				<div class="flex flex-col gap-2">
+					<h3 class="font-light text-lg pb-3">Save</h3>
+					<button class="btn btn-secondary gap-1 flex-nowrap" onclick={screenshot}>
+						<Camera class="w-5 h-5" />
+						<span>Screenshot</span>
+					</button>
+					<button class="btn btn-secondary gap-1 flex-nowrap" onclick={downloadJson}>
+						<ArrowDownTray class="w-5 h-5" />
+						<span>Download</span>
+					</button>
+					<div
+						class="tooltip-right"
+						class:tooltip={$page.url.pathname === '/app/imported'}
+						data-tip="Can not link to an imported map"
 					>
-						<Link class="w-5 h-5" />
-						<span>Generate Link</span>
+						<button
+							class="btn btn-secondary gap-1 flex-nowrap"
+							onclick={generateLink}
+							disabled={fetchingLink ||
+								turnstileToken === null ||
+								$page.url.pathname === '/app/imported'}
+						>
+							<Link class="w-5 h-5" />
+							<span>Generate Link</span>
+						</button>
+					</div>
+				</div>
+
+				<div class="divider divider-horizontal"></div>
+
+				<div class="flex flex-col gap-2">
+					<h3 class="font-light text-lg pb-3">Load</h3>
+					<input type="file" class="file-input file-input-primary w-full" bind:files />
+					<button class="btn btn-secondary gap-1 flex-nowrap" onclick={load}>
+						<ArrowUpTray class="w-5 h-5" />
+						<span>Load</span>
 					</button>
 				</div>
 			</div>
-
-			<div class="divider divider-horizontal" />
-
-			<div class="flex flex-col gap-2">
-				<h3 class="font-light text-lg pb-3">Load</h3>
-				<input type="file" class="file-input file-input-primary w-full" bind:files />
-				<button class="btn btn-secondary gap-1 flex-nowrap" on:click={load}>
-					<ArrowUpTray class="w-5 h-5" />
-					<span>Load</span>
-				</button>
-			</div>
+			<button
+				class="alert mt-4 cursor-pointer transition-colors"
+				class:hidden={!linkID && !fetchingLink && !errorOnGenerateLink}
+				class:alert-warning={fetchingLink}
+				class:alert-info={!copiedLink && !fetchingLink}
+				class:alert-success={copiedLink && !fetchingLink}
+				class:alert-error={errorOnGenerateLink}
+				onclick={copyLink}
+			>
+				<label class="swap swap-flip">
+					<input type="checkbox" checked={copiedLink && errorOnGenerateLink === false} disabled />
+					<ExclamationCircle class="swap-off w-6 h-6" />
+					<CheckCircle class="swap-on w-6 h-6" />
+				</label>
+				{#if fetchingLink === true}
+					<span in:fade>Generating Link</span>
+				{:else if linkID !== null}
+					<span in:fade>{$page.url.origin}/app?m={linkID}</span>
+				{:else if errorOnGenerateLink === true}
+					<span in:fade>Error Generating Link. Try Again Later.</span>
+				{/if}
+			</button>
 		</div>
-		<button
-			class="alert mt-4 cursor-pointer transition-colors"
-			class:hidden={!linkID && !fetchingLink && !errorOnGenerateLink}
-			class:alert-warning={fetchingLink}
-			class:alert-info={!copiedLink && !fetchingLink}
-			class:alert-success={copiedLink && !fetchingLink}
-			class:alert-error={errorOnGenerateLink}
-			on:click={copyLink}
-		>
-			<label class="swap swap-flip">
-				<input type="checkbox" checked={copiedLink && errorOnGenerateLink === false} disabled />
-				<ExclamationCircle class="swap-off w-6 h-6" />
-				<CheckCircle class="swap-on w-6 h-6" />
-			</label>
-			{#if fetchingLink === true}
-				<span in:fade>Generating Link</span>
-			{:else if linkID !== null}
-				<span in:fade>{$page.url.origin}/app?m={linkID}</span>
-			{:else if errorOnGenerateLink === true}
-				<span in:fade>Error Generating Link. Try Again Later.</span>
+	{/snippet}
+	{#snippet action()}
+		<div >
+			{#if $page.url.pathname !== '/app/imported'}
+				<Turnstile
+					siteKey={PUBLIC_TURNSTILE_SITE}
+					on:callback={onTurnstileSuccess}
+					on:expired={onTurnstileExpired}
+					on:timeout={onTurnstileTimeout}
+					on:error={onTurnstileError}
+					bind:reset={turnstileResetBind}
+				/>
 			{/if}
-		</button>
-	</div>
-	<div slot="action">
-		{#if $page.url.pathname !== '/app/imported'}
-			<Turnstile
-				siteKey={PUBLIC_TURNSTILE_SITE}
-				on:callback={onTurnstileSuccess}
-				on:expired={onTurnstileExpired}
-				on:timeout={onTurnstileTimeout}
-				on:error={onTurnstileError}
-				bind:reset={turnstileResetBind}
-			/>
-		{/if}
-	</div>
+		</div>
+	{/snippet}
 </ModalBase>

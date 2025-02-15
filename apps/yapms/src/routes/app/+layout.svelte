@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { createBubbler, preventDefault } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import '$lib/styles/global.css';
 	import ClearMapModal from '$lib/components/modals/clearmapmodal/ClearMapModal.svelte';
 	import SplitRegionModal from '$lib/components/modals/splitregionmodal/SplitRegionModal.svelte';
@@ -30,6 +33,11 @@
 	import { PresentationModeStore } from '$lib/stores/PresentationMode';
 	import PresentationNavBar from '$lib/components/navbar/PresentationNavBar.svelte';
 	import ToolsModal from '$lib/components/modals/toolsmodal/ToolsModal.svelte';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 
 	function handleKeyDown(event: KeyboardEvent) {
 		$InteractionStore.set(event.code, true);
@@ -63,11 +71,11 @@
 </svelte:head>
 
 <svelte:window
-	on:keydown={handleKeyDown}
-	on:keyup={handleKeyUp}
-	on:resize={reapplyPanZoom}
-	on:focusout={handleOnFocusOut}
-	on:beforeunload|preventDefault
+	onkeydown={handleKeyDown}
+	onkeyup={handleKeyUp}
+	onresize={reapplyPanZoom}
+	onfocusout={handleOnFocusOut}
+	onbeforeunload={preventDefault(bubble('beforeunload'))}
 />
 
 <div class="flex flex-col h-full">
@@ -78,7 +86,7 @@
 	{/if}
 	<div class="flex flex-row h-full overflow-hidden">
 		<MapChartContainer>
-			<slot />
+			{@render children?.()}
 		</MapChartContainer>
 		<SideBar />
 	</div>

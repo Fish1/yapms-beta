@@ -31,21 +31,25 @@
 </script>
 
 <ModalBase title="Edit Custom Color" store={EditCustomColorModalStore} onClose={close}>
-	<div slot="content">
-		<div class="flex flex-wrap gap-3">
-			{#each $EditCustomColorModalStore.customColor as color, index}
-				<CustomColor
-					{color}
-					onChange={(color) => changeColor(index, color)}
-					onDelete={() => deleteColor(index)}
-				/>
-			{/each}
-			<button class="btn btn-sm btn-success" on:click={addColor}
-				><PlusCircle class="w-6 h-6" /></button
-			>
+	{#snippet content()}
+		<div >
+			<div class="flex flex-wrap gap-3">
+				{#each $EditCustomColorModalStore.customColor as color, index}
+					<CustomColor
+						{color}
+						onChange={(color) => changeColor(index, color)}
+						onDelete={() => deleteColor(index)}
+					/>
+				{/each}
+				<button class="btn btn-sm btn-success" onclick={addColor}
+					><PlusCircle class="w-6 h-6" /></button
+				>
+			</div>
 		</div>
-	</div>
-	<div slot="action">
-		<button class="btn btn-success" on:click={confirm}>update</button>
-	</div>
+	{/snippet}
+	{#snippet action()}
+		<div >
+			<button class="btn btn-success" onclick={confirm}>update</button>
+		</div>
+	{/snippet}
 </ModalBase>

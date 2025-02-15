@@ -11,8 +11,8 @@
 	import Trash from '$lib/icons/Trash.svelte';
 	import Sortable from 'sortablejs';
 
-	let newName = 'New Candidate';
-	let newColors = ['#000000'];
+	let newName = $state('New Candidate');
+	let newColors = $state(['#000000']);
 
 	PresetColorsModalSelectedStore.subscribe((presetColors) => {
 		if (presetColors.length !== 0) newColors = presetColors;
@@ -69,35 +69,41 @@
 </script>
 
 <ModalBase store={AddCandidateModalStore} onClose={close}>
-	<div slot="title" class="flex flex-row gap-x-2 items-center">
-		<span>Add</span>
-		<input type="text" class="input input-sm input-bordered w-full max-w-xs" bind:value={newName} />
-	</div>
-	<ul slot="content" class="flex flex-row flex-wrap gap-4 justify-center" use:onListMount>
-		{#each newColors as color, index}
-			<li class="join">
-				<input
-					class="join-item"
-					type="color"
-					value={color}
-					on:change={(change) => {
+	{#snippet title()}
+		<div  class="flex flex-row gap-x-2 items-center">
+			<span>Add</span>
+			<input type="text" class="input input-sm input-bordered w-full max-w-xs" bind:value={newName} />
+		</div>
+	{/snippet}
+	{#snippet content()}
+		<ul  class="flex flex-row flex-wrap gap-4 justify-center" use:onListMount>
+			{#each newColors as color, index}
+				<li class="join">
+					<input
+						class="join-item"
+						type="color"
+						value={color}
+						onchange={(change) => {
 						newColors[index] = change.currentTarget.value;
 					}}
-				/>
-				<button
-					class="btn btn-sm btn-error join-item"
-					on:click={() => removeColor(index)}
-					disabled={newColors.length === 1}
-				>
-					<Trash class="w-6 h-6" />
-				</button>
-			</li>
-		{/each}
-	</ul>
-	<div slot="action" class="flex w-full gap-2">
-		<button class="btn btn-secondary" on:click={selectPresetColor}> Preset Colors </button>
-		<button class="btn btn-primary" on:click={addColor}>Add Color</button>
-		<div class="grow" />
-		<button class="btn btn-success" on:click={confirm}>Add Candidate</button>
-	</div>
+					/>
+					<button
+						class="btn btn-sm btn-error join-item"
+						onclick={() => removeColor(index)}
+						disabled={newColors.length === 1}
+					>
+						<Trash class="w-6 h-6" />
+					</button>
+				</li>
+			{/each}
+		</ul>
+	{/snippet}
+	{#snippet action()}
+		<div  class="flex w-full gap-2">
+			<button class="btn btn-secondary" onclick={selectPresetColor}> Preset Colors </button>
+			<button class="btn btn-primary" onclick={addColor}>Add Color</button>
+			<div class="grow"></div>
+			<button class="btn btn-success" onclick={confirm}>Add Candidate</button>
+		</div>
+	{/snippet}
 </ModalBase>

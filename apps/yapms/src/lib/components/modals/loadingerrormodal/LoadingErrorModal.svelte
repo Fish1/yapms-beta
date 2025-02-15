@@ -4,7 +4,9 @@
 </script>
 
 <ModalBase title="Loading Error" store={LoadingErrorModalStore}>
-	<div slot="content">
-		<p>There seems to have been an issue loading your map. Sorry about that!</p>
-	</div>
+	{#snippet content()}
+		<div >
+			<p>There seems to have been an issue loading your map. Sorry about that!</p>
+		</div>
+	{/snippet}
 </ModalBase>

@@ -4,11 +4,15 @@
 	import PlusCircle from '$lib/icons/PlusCircle.svelte';
 	import { page } from '$app/stores';
 
-	export let disabled = false;
-	export let onSubmitted: () => void;
+	interface Props {
+		disabled?: boolean;
+		onSubmitted: () => void;
+	}
 
-	let submitting = false;
-	let newMapName = '';
+	let { disabled = false, onSubmitted }: Props = $props();
+
+	let submitting = $state(false);
+	let newMapName = $state('');
 
 	async function createMap() {
 		if (newMapName === '') {
@@ -44,11 +48,11 @@
 	<div class="tooltip" data-tip="Create">
 		<button
 			class="btn btn-sm btn-primary join-item"
-			on:click={createMap}
+			onclick={createMap}
 			disabled={disabled || submitting || $page.url.pathname === '/app/imported'}
 		>
 			{#if submitting}
-				<span class="loading loading-dots loading-sm" />
+				<span class="loading loading-dots loading-sm"></span>
 			{:else}
 				<PlusCircle class="w-6 h-6" />
 			{/if}

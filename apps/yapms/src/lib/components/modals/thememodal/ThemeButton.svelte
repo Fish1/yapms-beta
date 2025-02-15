@@ -1,7 +1,11 @@
 <script lang="ts">
-	export let theme: string;
-	export let title: string;
-	export let margins: string[];
+	interface Props {
+		theme: string;
+		title: string;
+		margins: string[];
+	}
+
+	let { theme, title, margins }: Props = $props();
 </script>
 
 <button class="btn btn-lg" data-set-theme={theme} data-act-class="ACTIVECLASS">
@@ -12,7 +16,7 @@
 				<div
 					class="outline outline-1 outline-white w-4 h-4 rounded-full"
 					style:background-color={margin}
-				/>
+				></div>
 			{/each}
 		</div>
 	</div>
